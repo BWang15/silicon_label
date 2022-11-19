@@ -36,7 +36,7 @@ def deparse(MSB, LSB):
 
 
 def process_acc_data(components):
-    for key, i in zip(acc_dic.keys(), range(7, 13)):
+    for key, i in zip(acc_dic.keys(), range(acc_begin_idx, acc_end_idx)):
         acc_dic[key] = components[i]
     acc_x = deparse(acc_dic['x_MSB'], acc_dic['x_LSB']) / 8192
     acc_y = deparse(acc_dic['y_MSB'], acc_dic['y_LSB']) / 8192
@@ -45,7 +45,7 @@ def process_acc_data(components):
 
 
 def process_angular_velocity_data(components):
-    for key, i in zip(angular_velocity_dic.keys(), range(13, 19)):
+    for key, i in zip(angular_velocity_dic.keys(), range(angular_velocity_begin_idx, angular_velocity_end_idx)):
         angular_velocity_dic[key] = components[i]
     angular_velocity_x = deparse(angular_velocity_dic['x_MSB'], acc_dic['x_LSB']) / 8192
     angular_velocity_y = deparse(angular_velocity_dic['y_MSB'], acc_dic['y_LSB']) / 8192
@@ -54,7 +54,7 @@ def process_angular_velocity_data(components):
 
 
 def process_euler_angle_data(components):
-    for key, i in zip(euler_angle_dic.keys(), range(19, 24)):
+    for key, i in zip(euler_angle_dic.keys(), range(euler_angle_begin_idx, euler_angle_end_idx)):
         euler_angle_dic[key] = components[i]
     euler_angle_x = deparse(euler_angle_dic['x_MSB'], acc_dic['x_LSB']) / 100
     euler_angle_y = deparse(euler_angle_dic['y_MSB'], acc_dic['y_LSB']) / 100
@@ -77,15 +77,13 @@ if __name__ == '__main__':
                 euler_angle_x, euler_angle_y, euler_angle_z = process_euler_angle_data(components)
                 print(acc_x, acc_y, acc_z)
 
-        else:
-            length = length + ser.in_waiting
-            if length == 37:
-                s = ser.read(length).hex()
-                if s[6:10] == 'bfda':
-                    components = HexStrAddSpace(s).split(' ')
-                    acc_x, acc_y, acc_z = process_acc_data(components)
-                    angular_velocity_x, angular_velocity_y, angular_velocity_z = process_angular_velocity_data(components)
-                    euler_angle_x, euler_angle_y, euler_angle_z = process_euler_angle_data(components)
-                    print(acc_x, acc_y, acc_z)
+        elif length + ser.in_waiting == 37:
+            s = ser.read(length + ser.in_waiting).hex()
+            if s[6:10] == 'bfda':
+                components = HexStrAddSpace(s).split(' ')
+                acc_x, acc_y, acc_z = process_acc_data(components)
+                angular_velocity_x, angular_velocity_y, angular_velocity_z = process_angular_velocity_data(components)
+                euler_angle_x, euler_angle_y, euler_angle_z = process_euler_angle_data(components)
+                print(acc_x, acc_y, acc_z)
             else:
                 pass
