@@ -6,6 +6,7 @@ https://blog.csdn.net/weixin_31328141/article/details/114567343
 
 BR = 115200
 PORT = 'COM3'
+PORT = "/dev/ttyUSB0"
 
 """
 acc_begin_idx = 14
